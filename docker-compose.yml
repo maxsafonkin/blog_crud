@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: user  # CHANGEME
+      POSTGRES_PASSWORD: password  # CHANGEME
+      PGDATA: /data/postgres
+    volumes:
+      - ./database/data/postgres:/data/postgres
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql 
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+
+  blog:
+    container_name: blog
+    image: blog:dev
+    build: .
+    ports:
+      - 30001:30001
+    restart: always
+    env_file:
+      - .env  # CHANGEME
+    depends_on:
+      - postgres
